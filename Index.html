@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm and Programming using Python</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --bg-void:#05070d;
+  --bg-panel:#0b1120;
+  --bg-panel-alt:#111a2e;
+  --bg-chip:#16213a;
+  --border-soft:rgba(133,175,255,0.14);
+  --border-strong:rgba(133,175,255,0.28);
+  --accent-cyan:#4fd8ff;
+  --accent-blue:#5b8cff;
+  --accent-glow:#7ecbff;
+  --text-primary:#eef2ff;
+  --text-muted:#93a0c2;
+  --text-dim:#5c6padoesnotexist; /* placeholder removed below */
+  --success:#3ddc97;
+  --danger:#ff6b7a;
+  --font-mono:'JetBrains Mono', monospace;
+  --font-body:'Inter', sans-serif;
+  --radius-lg:18px;
+  --radius-md:12px;
+  --radius-sm:8px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-void);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND (glow orbs + wave lines)
+   ============================================================ */
+.bg-fx{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  overflow:hidden;
+  pointer-events:none;
+}
+.bg-fx .orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(90px);
+  opacity:0.35;
+  animation:drift 22s ease-in-out infinite;
+}
+.bg-fx .orb--1{
+  width:520px;height:520px;
+  background:radial-gradient(circle, var(--accent-blue), transparent 70%);
+  top:-180px; left:-120px;
+  animation-delay:0s;
+}
+.bg-fx .orb--2{
+  width:460px;height:460px;
+  background:radial-gradient(circle, var(--accent-cyan), transparent 70%);
+  top:35%; right:-160px;
+  animation-delay:-8s;
+}
+.bg-fx .orb--3{
+  width:380px;height:380px;
+  background:radial-gradient(circle, #7a5cff, transparent 70%);
+  bottom:-140px; left:20%;
+  animation-delay:-14s;
+}
+@keyframes drift{
+  0%,100%{ transform:translate(0,0) scale(1); }
+  50%{ transform:translate(30px,-25px) scale(1.08); }
+}
+.bg-fx svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0.10;
+}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.wrap{
+  max-width:920px;
+  margin:0 auto;
+  padding:0 24px;
+}
+section{
+  padding:90px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+section:last-of-type{border-bottom:none;}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--accent-cyan);
+  background:rgba(79,216,255,0.08);
+  border:1px solid rgba(79,216,255,0.25);
+  padding:6px 12px;
+  border-radius:999px;
+  margin-bottom:18px;
+}
+.eyebrow::before{
+  content:'';
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--accent-cyan);
+  box-shadow:0 0 8px var(--accent-cyan);
+}
+
+h1,h2,h3{
+  font-family:var(--font-mono);
+  font-weight:800;
+  letter-spacing:-0.01em;
+  color:var(--text-primary);
+  margin:0 0 14px;
+}
+h2{
+  font-size:clamp(28px,4vw,38px);
+}
+h3{
+  font-size:19px;
+  font-weight:700;
+  color:var(--accent-glow);
+  margin-bottom:8px;
+}
+p{ color:var(--text-muted); margin:0 0 16px; }
+.lede{
+  font-size:17px;
+  color:var(--text-muted);
+  max-width:640px;
+}
+
+/* ============================================================
+   STICKY NAV
+   ============================================================ */
+#topnav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  backdrop-filter:blur(14px);
+  background:rgba(5,7,13,0.72);
+  border-bottom:1px solid var(--border-soft);
+}
+#topnav .wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:14px;
+  padding-bottom:14px;
+  max-width:920px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:var(--font-mono);
+  font-weight:700;
+  font-size:14px;
+  color:var(--text-primary);
+  text-decoration:none;
+}
+.brand .dot-mark{
+  width:10px;height:10px;
+  border-radius:3px;
+  background:linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  box-shadow:0 0 10px rgba(79,216,255,0.6);
+}
+.navlinks{
+  display:flex;
+  gap:4px;
+  list-style:none;
+  margin:0; padding:0;
+}
+.navlinks a{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-muted);
+  text-decoration:none;
+  padding:7px 12px;
+  border-radius:8px;
+  transition:color .2s ease, background .2s ease;
+  white-space:nowrap;
+}
+.navlinks a:hover{ color:var(--text-primary); }
+.navlinks a.active{
+  color:var(--accent-cyan);
+  background:rgba(79,216,255,0.10);
+}
+.navlinks{overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none;}
+.navlinks::-webkit-scrollbar{display:none;}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{
+  padding-top:70px;
+  padding-bottom:60px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:36px;
+}
+.hero h1{
+  font-size:clamp(30px,5vw,46px);
+  line-height:1.15;
+}
+.hero .lede{ font-size:18px; margin-bottom:26px; }
+.hero-meta{
+  display:flex;
+  gap:22px;
+  flex-wrap:wrap;
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-muted);
+}
+.hero-meta strong{ color:var(--accent-glow); font-weight:700; }
+
+/* ============================================================
+   CODE WINDOW — signature component
+   ============================================================ */
+.code-window{
+  background:var(--bg-panel);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:0 20px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset;
+}
+.code-window__bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 16px;
+  background:var(--bg-panel-alt);
+  border-bottom:1px solid var(--border-soft);
+}
+.win-dot{ width:10px; height:10px; border-radius:50%; }
+.win-dot--r{ background:#ff5f57; }
+.win-dot--y{ background:#febc2e; }
+.win-dot--g{ background:#28c840; }
+.code-window__title{
+  margin-left:8px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--text-muted);
+  background:rgba(255,255,255,0.03);
+  padding:3px 10px;
+  border-radius:6px;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.code-window__body{ padding:20px; }
+.code-block{
+  font-family:var(--font-mono);
+  font-size:14px;
+  line-height:1.7;
+  color:#d7e2ff;
+  margin:0 0 16px;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.code-block .kw{ color:#ff9ed2; }
+.code-block .fn{ color:#7ecbff; }
+.code-block .str{ color:#a6e3a1; }
+.code-block .num{ color:#ffcb6b; }
+.code-block .cm{ color:#5c6a8f; font-style:italic; }
+.code-block .muted-line{ opacity:0.35; }
+.code-block .hl{
+  display:block;
+  border-radius:6px;
+  padding:1px 6px;
+  margin:0 -6px;
+  transition:all .25s ease;
+}
+.code-block .hl.on{
+  background:rgba(61,220,151,0.14);
+  color:#eafff5;
+  box-shadow:inset 2px 0 0 var(--success);
+}
+.code-block .hl.off{
+  opacity:0.3;
+}
+
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  margin-bottom:16px;
+}
+.ctl-field{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.ctl-field label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--text-dim, var(--text-muted));
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+}
+select, input[type=number], input[type=text]{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text-primary);
+  background:var(--bg-chip);
+  border:1px solid var(--border-soft);
+  border-radius:8px;
+  padding:8px 10px;
+  outline:none;
+  transition:border-color .2s ease;
+}
+select:focus, input:focus{ border-color:var(--accent-cyan); }
+select{ cursor:pointer; }
+input[type=number]{ width:88px; }
+input[type=text]{ width:180px; }
+
+.btn{
+  font-family:var(--font-mono);
+  font-size:13px;
+  font-weight:600;
+  color:#04121a;
+  background:linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  border:none;
+  border-radius:8px;
+  padding:9px 16px;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+  box-shadow:0 6px 18px -6px rgba(79,216,255,0.5);
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:0 10px 22px -6px rgba(79,216,255,0.65); }
+.btn:active{ transform:translateY(0); }
+.btn--ghost{
+  background:transparent;
+  color:var(--text-muted);
+  border:1px solid var(--border-soft);
+  box-shadow:none;
+}
+.btn--ghost:hover{ color:var(--text-primary); border-color:var(--border-strong); }
+.btn--sm{ padding:7px 12px; font-size:12px; }
+
+.output-box{
+  background:#02060d;
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm);
+  padding:14px 16px;
+  font-family:var(--font-mono);
+  font-size:13.5px;
+  color:var(--success);
+  min-height:22px;
+}
+.output-box .out-label{
+  color:var(--text-dim, var(--text-muted));
+  margin-right:8px;
+}
+.output-box.is-false{ color:var(--danger); }
+.output-box .out-line{ display:block; }
+
+/* explanation + table under each code window */
+.explain{
+  padding:18px 20px 4px;
+  border-top:1px dashed var(--border-soft);
+}
+.explain p{ font-size:14.5px; margin-bottom:12px; }
+.ref-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  margin-bottom:16px;
+}
+.ref-table th, .ref-table td{
+  text-align:left;
+  padding:9px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.ref-table th{
+  font-family:var(--font-mono);
+  color:var(--accent-cyan);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+}
+.ref-table td{ color:var(--text-muted); }
+.ref-table td code, .ref-table th code{
+  font-family:var(--font-mono);
+  color:var(--text-primary);
+  background:rgba(255,255,255,0.05);
+  padding:2px 6px;
+  border-radius:4px;
+}
+
+/* ============================================================
+   SEGMENT wrapper
+   ============================================================ */
+.segment{ margin-top:34px; }
+.segment:first-of-type{ margin-top:0; }
+.segment-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin-bottom:12px;
+}
+.segment-tag{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--bg-void);
+  background:var(--accent-glow);
+  padding:2px 8px;
+  border-radius:5px;
+  font-weight:700;
+  text-transform:uppercase;
+}
+.segment-tag--static{ background:var(--text-dim, #7480a0); color:#04070f; }
+
+.section-head{ margin-bottom:44px; max-width:640px; }
+
+/* chips for list section */
+.chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:16px;
+}
+.chip{
+  font-family:var(--font-mono);
+  font-size:13px;
+  background:var(--bg-chip);
+  border:1px solid var(--border-soft);
+  color:var(--text-primary);
+  padding:6px 12px;
+  border-radius:999px;
+}
+.chip .idx{ color:var(--text-dim, var(--text-muted)); margin-right:6px; font-size:11px; }
+
+/* footer */
+footer{
+  padding:60px 0 80px;
+  text-align:center;
+}
+footer p{ font-family:var(--font-mono); font-size:12.5px; color:var(--text-dim, var(--text-muted)); }
+
+/* responsive */
+@media (max-width:640px){
+  section{ padding:64px 0; }
+  .wrap{ padding:0 18px; }
+  .navlinks a{ padding:7px 9px; font-size:12px; }
+  input[type=text]{ width:130px; }
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .bg-fx .orb{ animation:none; }
+  html{ scroll-behavior:auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-fx">
+  <div class="orb orb--1"></div>
+  <div class="orb orb--2"></div>
+  <div class="orb orb--3"></div>
+  <svg viewBox="0 0 1200 800" preserveAspectRatio="none">
+    <path d="M0,120 C300,180 400,40 700,100 S1000,220 1200,140" fill="none" stroke="#7ecbff" stroke-width="1.2"/>
+    <path d="M0,300 C280,260 460,400 720,340 S1040,260 1200,340" fill="none" stroke="#5b8cff" stroke-width="1"/>
+    <path d="M0,560 C260,520 480,640 760,580 S1020,500 1200,600" fill="none" stroke="#4fd8ff" stroke-width="1"/>
+  </svg>
+</div>
+
+<nav id="topnav">
+  <div class="wrap">
+    <a href="#hero" class="brand"><span class="dot-mark"></span>py.playground</a>
+    <ul class="navlinks">
+      <li><a href="#intro" data-nav>Intro</a></li>
+      <li><a href="#operators" data-nav>Operators</a></li>
+      <li><a href="#conditional" data-nav>Conditional</a></li>
+      <li><a href="#loops" data-nav>Loops</a></li>
+      <li><a href="#lists" data-nav>Lists</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============================================================ HERO ============================================================ -->
+<section id="hero" class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Workshop SMA · 60 Menit</span>
+      <h1>Algorithm and Programming<br>using Python</h1>
+      <p class="lede">Belajar logika dasar pemrograman lewat kode yang bisa langsung kamu ubah dan jalankan. Gak perlu install apa-apa — semua simulasi jalan di halaman ini.</p>
+      <div class="hero-meta">
+        <span>▶ <strong>5 Topik</strong></span>
+        <span>◎ <strong>Interaktif</strong></span>
+        <span>⧗ <strong>60 Menit</strong></span>
+      </div>
+    </div>
+    <div class="code-window">
+      <div class="code-window__bar">
+        <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+        <span class="code-window__title">welcome.py</span>
+      </div>
+      <div class="code-window__body">
+        <pre class="code-block" id="heroTyped">&nbsp;</pre>
+        <div class="output-box" id="heroOutput"><span class="out-label">&gt;&gt;&gt;</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SESI 1 — INTRO ============================================================ -->
+<section id="intro">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Sesi 1</span>
+      <h2>Introduction to Python</h2>
+      <p class="lede">Pengantar singkat sebelum masuk ke logika pemrograman. Bacaan cepat, gak ada demo panjang.</p>
+    </div>
+
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag segment-tag--static">Baca</span><h3>Algoritma, Programming & Kenapa Python?</h3></div>
+      <div class="code-window">
+        <div class="code-window__body">
+          <p><strong style="color:var(--text-primary)">Algoritma</strong> adalah urutan langkah logis untuk menyelesaikan masalah — persis kaya resep mie instan: rebus air, masukin mie, tunggu 3 menit, sajikan. <strong style="color:var(--text-primary)">Programming</strong> adalah cara menuliskan algoritma itu dalam bahasa yang dimengerti komputer.</p>
+          <p>Kenapa Python? Karena syntax-nya mirip Bahasa Inggris, dipakai luas di industri (AI, data, web), dan paling ramah untuk pemula.</p>
+          <p><strong style="color:var(--text-primary)">IDE</strong> (Integrated Development Environment) itu simpel: tempat kamu nulis kode dan langsung lihat hasilnya. Sepanjang halaman ini, tombol <strong style="color:var(--accent-cyan)">Run</strong> di tiap kotak kode mensimulasikan itu.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Basic Syntax — Coba Run Sendiri</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">hello.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block"><span class="cm"># baris ini komentar, gak dieksekusi</span>
+<span class="fn">print</span>(<span class="str">"<span id="helloTextPreview">Hello, World!</span>"</span>)</pre>
+          <div class="controls">
+            <div class="ctl-field">
+              <label>Teks di dalam print()</label>
+              <input type="text" id="helloInput" value="Hello, World!" maxlength="40">
+            </div>
+            <button class="btn" id="helloRunBtn">▶ Run</button>
+          </div>
+          <div class="output-box" id="helloOutput"><span class="out-label">&gt;&gt;&gt;</span> <span class="text-dim" style="color:var(--text-muted)">klik Run untuk lihat hasil</span></div>
+        </div>
+        <div class="explain">
+          <p>Ini yang bakal kamu lakuin terus di seluruh halaman ini: ubah bagian yang bisa diklik/diisi, klik <strong style="color:var(--text-primary)">Run</strong>, lihat outputnya berubah. Baris yang diawali <code style="font-family:var(--font-mono);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">#</code> adalah komentar — catatan buat manusia, komputer mengabaikannya.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Variables & Data Types</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">variables.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block">x = <span id="varValuePreview" class="num">5</span>
+<span class="fn">print</span>(x)
+<span class="fn">print</span>(<span class="fn">type</span>(x))</pre>
+          <div class="controls">
+            <div class="ctl-field">
+              <label>Tipe Data</label>
+              <select id="varTypeSelect">
+                <option value="int">int</option>
+                <option value="float">float</option>
+                <option value="str">str</option>
+                <option value="bool">bool</option>
+              </select>
+            </div>
+            <div class="ctl-field">
+              <label>Nilai</label>
+              <span id="varValueInputWrap"></span>
+            </div>
+          </div>
+          <div class="output-box" id="varOutput"></div>
+        </div>
+        <div class="explain">
+          <table class="ref-table">
+            <tr><th>Tipe</th><th>Contoh</th><th>Keterangan</th></tr>
+            <tr><td><code>int</code></td><td><code>5</code></td><td>bilangan bulat</td></tr>
+            <tr><td><code>float</code></td><td><code>5.5</code></td><td>bilangan desimal</td></tr>
+            <tr><td><code>str</code></td><td><code>"Halo"</code></td><td>teks, pakai kutip</td></tr>
+            <tr><td><code>bool</code></td><td><code>True</code> / <code>False</code></td><td>benar / salah</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag segment-tag--static">Baca</span><h3>Error Umum</h3></div>
+      <div class="code-window">
+        <div class="code-window__body">
+          <table class="ref-table" style="margin:0;">
+            <tr><th>Error</th><th>Penyebab</th></tr>
+            <tr><td><code>SyntaxError</code></td><td>typo / lupa tanda kutip atau kurung</td></tr>
+            <tr><td><code>NameError</code></td><td>variabel belum didefinisikan</td></tr>
+            <tr><td><code>IndentationError</code></td><td>spasi/indentasi gak konsisten</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SESI 2 — OPERATORS ============================================================ -->
+<section id="operators">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Sesi 2</span>
+      <h2>Operators</h2>
+      <p class="lede">Simbol buat ngolah nilai. Ganti angka atau operatornya, lihat hasilnya berubah langsung.</p>
+    </div>
+
+    <!-- 2.1 Arithmetic -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Arithmetic Operators</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">arithmetic.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block">a = <span id="arA_prev" class="num">10</span>
+b = <span id="arB_prev" class="num">3</span>
+<span class="fn">print</span>(a <span id="arOp_prev">+</span> b)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>a</label><input type="number" id="arA" value="10"></div>
+            <div class="ctl-field"><label>Operator</label>
+              <select id="arOp">
+                <option value="+">+</option>
+                <option value="-">-</option>
+                <option value="*">*</option>
+                <option value="/">/</option>
+                <option value="//">//</option>
+                <option value="%">%</option>
+                <option value="**">**</option>
+              </select>
+            </div>
+            <div class="ctl-field"><label>b</label><input type="number" id="arB" value="3"></div>
+          </div>
+          <div class="output-box" id="arOutput"></div>
+        </div>
+        <div class="explain">
+          <table class="ref-table">
+            <tr><th>Operator</th><th>Nama</th><th>Contoh</th></tr>
+            <tr><td><code>+</code></td><td>Penjumlahan</td><td><code>5 + 2</code> → 7</td></tr>
+            <tr><td><code>-</code></td><td>Pengurangan</td><td><code>5 - 2</code> → 3</td></tr>
+            <tr><td><code>*</code></td><td>Perkalian</td><td><code>5 * 2</code> → 10</td></tr>
+            <tr><td><code>/</code></td><td>Pembagian</td><td><code>5 / 2</code> → 2.5</td></tr>
+            <tr><td><code>//</code></td><td>Pembagian bulat</td><td><code>5 // 2</code> → 2</td></tr>
+            <tr><td><code>%</code></td><td>Sisa bagi (modulus)</td><td><code>5 % 2</code> → 1</td></tr>
+            <tr><td><code>**</code></td><td>Pangkat</td><td><code>5 ** 2</code> → 25</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.2 Assignment -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Assignment Operators</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">assignment.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block">x = <span id="asX_prev" class="num">10</span>
+x <span id="asOp_prev">+=</span> <span id="asN_prev" class="num">5</span>
+<span class="fn">print</span>(x)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>Nilai awal x</label><input type="number" id="asX" value="10"></div>
+            <div class="ctl-field"><label>Operator</label>
+              <select id="asOp">
+                <option value="+=">+=</option>
+                <option value="-=">-=</option>
+                <option value="*=">*=</option>
+                <option value="/=">/=</option>
+              </select>
+            </div>
+            <div class="ctl-field"><label>Nilai</label><input type="number" id="asN" value="5"></div>
+          </div>
+          <div class="output-box" id="asOutput"></div>
+        </div>
+        <div class="explain">
+          <table class="ref-table">
+            <tr><th>Operator</th><th>Artinya</th></tr>
+            <tr><td><code>x += n</code></td><td>sama dengan <code>x = x + n</code></td></tr>
+            <tr><td><code>x -= n</code></td><td>sama dengan <code>x = x - n</code></td></tr>
+            <tr><td><code>x *= n</code></td><td>sama dengan <code>x = x * n</code></td></tr>
+            <tr><td><code>x /= n</code></td><td>sama dengan <code>x = x / n</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.3 Comparison -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Comparison Operators</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">comparison.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block">a = <span id="cpA_prev" class="num">10</span>
+b = <span id="cpB_prev" class="num">3</span>
+<span class="fn">print</span>(a <span id="cpOp_prev">==</span> b)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>a</label><input type="number" id="cpA" value="10"></div>
+            <div class="ctl-field"><label>Operator</label>
+              <select id="cpOp">
+                <option value="==">==</option>
+                <option value="!=">!=</option>
+                <option value=">">&gt;</option>
+                <option value="<">&lt;</option>
+                <option value=">=">&gt;=</option>
+                <option value="<=">&lt;=</option>
+              </select>
+            </div>
+            <div class="ctl-field"><label>b</label><input type="number" id="cpB" value="3"></div>
+          </div>
+          <div class="output-box" id="cpOutput"></div>
+        </div>
+        <div class="explain">
+          <table class="ref-table">
+            <tr><th>Operator</th><th>Artinya</th></tr>
+            <tr><td><code>==</code></td><td>sama dengan</td></tr>
+            <tr><td><code>!=</code></td><td>tidak sama dengan</td></tr>
+            <tr><td><code>&gt;</code> / <code>&lt;</code></td><td>lebih besar / lebih kecil</td></tr>
+            <tr><td><code>&gt;=</code> / <code>&lt;=</code></td><td>lebih besar sama dengan / lebih kecil sama dengan</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.4 Logical -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Logical Operators</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar">
+          <span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span>
+          <span class="code-window__title">logical.py</span>
+        </div>
+        <div class="code-window__body">
+          <pre class="code-block">p = <span id="lgP_prev" class="kw">True</span>
+q = <span id="lgQ_prev" class="kw">True</span>
+<span class="fn">print</span>(p <span id="lgOp_prev">and</span> q)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>p</label>
+              <select id="lgP"><option value="true">True</option><option value="false">False</option></select>
+            </div>
+            <div class="ctl-field"><label>Operator</label>
+              <select id="lgOp">
+                <option value="and">and</option>
+                <option value="or">or</option>
+                <option value="not">not</option>
+              </select>
+            </div>
+            <div class="ctl-field" id="lgQWrap"><label>q</label>
+              <select id="lgQ"><option value="true">True</option><option value="false">False</option></select>
+            </div>
+          </div>
+          <div class="output-box" id="lgOutput"></div>
+        </div>
+        <div class="explain">
+          <table class="ref-table">
+            <tr><th>p</th><th>q</th><th><code>p and q</code></th><th><code>p or q</code></th></tr>
+            <tr><td>True</td><td>True</td><td>True</td><td>True</td></tr>
+            <tr><td>True</td><td>False</td><td>False</td><td>True</td></tr>
+            <tr><td>False</td><td>True</td><td>False</td><td>True</td></tr>
+            <tr><td>False</td><td>False</td><td>False</td><td>False</td></tr>
+          </table>
+          <p><code>not p</code> membalik nilai p — <code>not True</code> jadi <code>False</code>, begitu sebaliknya.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SESI 3 — CONDITIONAL ============================================================ -->
+<section id="conditional">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Sesi 3</span>
+      <h2>Conditional Statements</h2>
+      <p class="lede">Kode yang jalannya tergantung kondisi. Ubah nilainya, lihat baris mana yang aktif (nyala hijau).</p>
+    </div>
+
+    <!-- 3.1 simple if -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Simple if</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">if_simple.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">nilai = <span id="c1_prev" class="num">75</span>
+<span class="kw">if</span> nilai &gt;= 60:
+    <span class="hl" id="c1_line">print("Lulus")</span></pre>
+          <div class="controls">
+            <div class="ctl-field"><label>nilai (0–100)</label><input type="number" id="c1Val" value="75" min="0" max="100"></div>
+          </div>
+          <div class="output-box" id="c1Output"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.2 if-else -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>if - else</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">if_else.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">nilai = <span id="c2_prev" class="num">45</span>
+<span class="kw">if</span> nilai &gt;= 60:
+    <span class="hl" id="c2_lineA">print("Lulus")</span>
+<span class="kw">else</span>:
+    <span class="hl" id="c2_lineB">print("Tidak Lulus")</span></pre>
+          <div class="controls">
+            <div class="ctl-field"><label>nilai (0–100)</label><input type="number" id="c2Val" value="45" min="0" max="100"></div>
+          </div>
+          <div class="output-box" id="c2Output"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.3 if-elif-else -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>if - elif - else</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">grade_checker.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">nilai = <span id="c3_prev" class="num">82</span>
+<span class="kw">if</span> nilai &gt;= 90:
+    <span class="hl" id="c3_A">print("A")</span>
+<span class="kw">elif</span> nilai &gt;= 80:
+    <span class="hl" id="c3_B">print("B")</span>
+<span class="kw">elif</span> nilai &gt;= 70:
+    <span class="hl" id="c3_C">print("C")</span>
+<span class="kw">else</span>:
+    <span class="hl" id="c3_D">print("D")</span></pre>
+          <div class="controls">
+            <div class="ctl-field"><label>nilai (0–100)</label><input type="number" id="c3Val" value="82" min="0" max="100"></div>
+          </div>
+          <div class="output-box" id="c3Output"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.4 nested -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Nested Condition</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">nested.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">angka = <span id="c4_prev" class="num">8</span>
+<span class="kw">if</span> angka &gt; 0:
+    <span class="kw">if</span> angka % 2 == 0:
+        <span class="hl" id="c4_A">print("Positif genap")</span>
+    <span class="kw">else</span>:
+        <span class="hl" id="c4_B">print("Positif ganjil")</span>
+<span class="kw">else</span>:
+    <span class="hl" id="c4_C">print("Bukan positif")</span></pre>
+          <div class="controls">
+            <div class="ctl-field"><label>angka</label><input type="number" id="c4Val" value="8"></div>
+          </div>
+          <div class="output-box" id="c4Output"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.5 logical in conditional -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Logical Operators dalam Kondisi</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">eligibility.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">umur = <span id="c5_prevUmur" class="num">17</span>
+punya_ktp = <span id="c5_prevKtp" class="kw">True</span>
+<span class="kw">if</span> umur &gt;= 17 <span class="kw">and</span> punya_ktp:
+    <span class="hl" id="c5_A">print("Boleh daftar")</span>
+<span class="kw">else</span>:
+    <span class="hl" id="c5_B">print("Belum memenuhi syarat")</span></pre>
+          <div class="controls">
+            <div class="ctl-field"><label>umur</label><input type="number" id="c5Umur" value="17" min="0" max="100"></div>
+            <div class="ctl-field"><label>punya_ktp</label>
+              <select id="c5Ktp"><option value="true">True</option><option value="false">False</option></select>
+            </div>
+          </div>
+          <div class="output-box" id="c5Output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SESI 4 — LOOPS ============================================================ -->
+<section id="loops">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Sesi 4</span>
+      <h2>Loops</h2>
+      <p class="lede">Kode yang berulang otomatis. Atur angkanya, lihat berapa kali dan apa yang tercetak.</p>
+    </div>
+
+    <!-- 4.1 while -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>while Loop</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">while_loop.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">i = <span id="w_prevStart" class="num">1</span>
+<span class="kw">while</span> i &lt;= <span id="w_prevLimit" class="num">5</span>:
+    <span class="fn">print</span>(i)
+    i += 1</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>Mulai dari</label><input type="number" id="wStart" value="1"></div>
+            <div class="ctl-field"><label>Sampai (maks)</label><input type="number" id="wLimit" value="5"></div>
+          </div>
+          <div class="output-box" id="wOutput"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.2 for -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>for Loop</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">for_loop.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span id="f_prevStart" class="num">0</span>, <span id="f_prevStop" class="num">10</span>, <span id="f_prevStep" class="num">2</span>):
+    <span class="fn">print</span>(i)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>start</label><input type="number" id="fStart" value="0"></div>
+            <div class="ctl-field"><label>stop</label><input type="number" id="fStop" value="10"></div>
+            <div class="ctl-field"><label>step</label><input type="number" id="fStep" value="2"></div>
+          </div>
+          <div class="output-box" id="fOutput"></div>
+        </div>
+        <div class="explain"><p><code>range(start, stop, step)</code> menghasilkan angka dari <code>start</code> sampai sebelum <code>stop</code>, meloncat sebesar <code>step</code>.</p></div>
+      </div>
+    </div>
+
+    <!-- 4.3 break/continue -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>break & continue</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">break_continue.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(1, 10):
+    <span class="kw">if</span> i == <span id="bc_prevStop" class="num">5</span>:
+        <span id="bc_prevMode" class="kw">break</span>
+    <span class="fn">print</span>(i)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>Mode</label>
+              <select id="bcMode"><option value="break">break</option><option value="continue">continue</option><option value="none">tanpa apa-apa</option></select>
+            </div>
+            <div class="ctl-field"><label>Berhenti/lewati di angka</label><input type="number" id="bcStop" value="5"></div>
+          </div>
+          <div class="output-box" id="bcOutput"></div>
+        </div>
+        <div class="explain"><p><code>break</code> langsung menghentikan loop. <code>continue</code> melewati sisa kode di iterasi itu dan lanjut ke angka berikutnya.</p></div>
+      </div>
+    </div>
+
+    <!-- 4.4 nested loop -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Nested Loop — Pola Bintang</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">pattern.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(1, <span id="np_prevRows" class="num">5</span> + 1):
+    <span class="fn">print</span>(<span class="str">"*"</span> * i)</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>Jumlah baris</label><input type="number" id="npRows" value="5" min="1" max="12"></div>
+          </div>
+          <div class="output-box" id="npOutput" style="font-family:var(--font-mono); letter-spacing:2px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SESI 5 — LISTS ============================================================ -->
+<section id="lists">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Sesi 5</span>
+      <h2>Lists</h2>
+      <p class="lede">Satu variabel buat nyimpen banyak data. Coba tambah, ubah, atau hapus isinya.</p>
+    </div>
+
+    <!-- 5.1 static -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag segment-tag--static">Baca</span><h3>Apa itu List?</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">list_intro.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">buah = [<span class="str">"Apel"</span>, <span class="str">"Jeruk"</span>, <span class="str">"Mangga"</span>]
+<span class="fn">print</span>(buah)</pre>
+          <p style="margin-top:12px; font-size:14px;">List adalah kumpulan data dalam satu variabel. Setiap item punya <strong style="color:var(--text-primary)">index</strong> — posisinya — dimulai dari <code style="font-family:var(--font-mono);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">0</code>, bukan 1.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.2 add/update/remove -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Add, Update, Remove</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">list_edit.py</span></div>
+        <div class="code-window__body">
+          <p style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">buah = </p>
+          <div class="chip-row" id="listChips"></div>
+
+          <div class="controls" style="margin-top:6px;">
+            <div class="ctl-field"><label>Tambah item</label><input type="text" id="listAddInput" placeholder="cth: Pisang"></div>
+            <button class="btn btn--sm" id="listAddBtn">buah.append(...)</button>
+          </div>
+          <div class="controls">
+            <div class="ctl-field"><label>Update index ke</label><input type="number" id="listUpdateIdx" value="0" min="0"></div>
+            <div class="ctl-field"><label>Jadi</label><input type="text" id="listUpdateVal" placeholder="cth: Nanas"></div>
+            <button class="btn btn--sm" id="listUpdateBtn">buah[i] = ...</button>
+          </div>
+          <div class="controls">
+            <div class="ctl-field"><label>Hapus item</label><input type="text" id="listRemoveVal" placeholder="cth: Jeruk"></div>
+            <button class="btn btn--sm btn--ghost" id="listRemoveBtn">buah.remove(...)</button>
+          </div>
+          <div class="output-box" id="listOutput"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.3 loop through -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Loop Through a List</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">loop_list.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block"><span class="kw">for</span> item <span class="kw">in</span> buah:
+    <span class="fn">print</span>(item)</pre>
+          <div class="controls"><button class="btn" id="listLoopBtn">▶ Run</button></div>
+          <div class="output-box" id="listLoopOutput"></div>
+        </div>
+        <div class="explain"><p>List yang dipakai sama dengan hasil edit kamu di atas — coba tambah/hapus dulu, lalu run lagi di sini.</p></div>
+      </div>
+    </div>
+
+    <!-- 5.4 dict intro -->
+    <div class="segment">
+      <div class="segment-head"><span class="segment-tag">Coba</span><h3>Intro to Dictionary</h3></div>
+      <div class="code-window">
+        <div class="code-window__bar"><span class="win-dot win-dot--r"></span><span class="win-dot win-dot--y"></span><span class="win-dot win-dot--g"></span><span class="code-window__title">dictionary.py</span></div>
+        <div class="code-window__body">
+          <pre class="code-block">siswa = {<span class="str">"nama"</span>: <span class="str">"Budi"</span>, <span class="str">"nilai"</span>: 90}
+<span class="fn">print</span>(siswa[<span class="str">"<span id="dictKeyPreview">nama</span>"</span>])</pre>
+          <div class="controls">
+            <div class="ctl-field"><label>Ambil key</label>
+              <select id="dictKey"><option value="nama">nama</option><option value="nilai">nilai</option></select>
+            </div>
+          </div>
+          <div class="output-box" id="dictOutput"></div>
+        </div>
+        <div class="explain"><p>Dictionary menyimpan data berpasangan <strong style="color:var(--text-primary)">key</strong> dan <strong style="color:var(--text-primary)">value</strong> — bukan pakai index angka, tapi pakai nama.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Algorithm and Programming using Python — dibuat untuk sesi belajar 60 menit.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   SCROLLSPY
+   ============================================================ */
+(function(){
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.navlinks a[data-nav]');
+  const map = {};
+  navLinks.forEach(a => map[a.getAttribute('href').slice(1)] = a);
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      if(!map[id]) return;
+      if(entry.isIntersecting){
+        navLinks.forEach(a => a.classList.remove('active'));
+        map[id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+
+  sections.forEach(s => obs.observe(s));
+})();
+
+/* ============================================================
+   HERO TYPING ANIMATION
+   ============================================================ */
+(function(){
+  const codeEl = document.getElementById('heroTyped');
+  const outEl = document.getElementById('heroOutput');
+  const lines = [
+    { text: '# jalankan kode ini di kepalamu dulu', cls: 'cm' },
+    { text: 'print("Selamat datang!")', html: '<span class="fn">print</span>(<span class="str">"Selamat datang!"</span>)' }
+  ];
+  const full = lines.map(l => l.text).join('\n');
+  let i = 0;
+  codeEl.textContent = '';
+  function typeStep(){
+    if(i <= full.length){
+      codeEl.textContent = full.slice(0, i);
+      i += 2;
+      setTimeout(typeStep, 22);
+    } else {
+      codeEl.innerHTML = '<span class="cm"># jalankan kode ini di kepalamu dulu</span>\n<span class="fn">print</span>(<span class="str">"Selamat datang!"</span>)';
+      outEl.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> Selamat datang!';
+    }
+  }
+  setTimeout(typeStep, 400);
+})();
+
+/* ============================================================
+   SESI 1 — Hello World run demo
+   ============================================================ */
+(function(){
+  const input = document.getElementById('helloInput');
+  const preview = document.getElementById('helloTextPreview');
+  const output = document.getElementById('helloOutput');
+  const btn = document.getElementById('helloRunBtn');
+
+  input.addEventListener('input', () => { preview.textContent = input.value || ''; });
+  btn.addEventListener('click', () => {
+    const val = input.value || '';
+    output.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + escapeHtml(val);
+  });
+})();
+
+/* ============================================================
+   SESI 1 — Variables & Data Types
+   ============================================================ */
+(function(){
+  const typeSelect = document.getElementById('varTypeSelect');
+  const inputWrap = document.getElementById('varValueInputWrap');
+  const preview = document.getElementById('varValuePreview');
+  const output = document.getElementById('varOutput');
+
+  function renderInput(){
+    const t = typeSelect.value;
+    let html = '';
+    if(t === 'int'){ html = '<input type="number" id="varValInput" value="5" step="1">'; }
+    else if(t === 'float'){ html = '<input type="number" id="varValInput" value="5.5" step="0.1">'; }
+    else if(t === 'str'){ html = '<input type="text" id="varValInput" value="Halo">'; }
+    else if(t === 'bool'){ html = '<select id="varValInput"><option value="true">True</option><option value="false">False</option></select>'; }
+    inputWrap.innerHTML = html;
+    document.getElementById('varValInput').addEventListener('input', update);
+    document.getElementById('varValInput').addEventListener('change', update);
+    update();
+  }
+
+  function update(){
+    const t = typeSelect.value;
+    const raw = document.getElementById('varValInput').value;
+    let displayVal, pyType, printedVal;
+    if(t === 'int'){
+      const n = parseInt(raw || '0', 10);
+      displayVal = String(n); pyType = 'int'; printedVal = String(n);
+      preview.innerHTML = '<span class="num">' + n + '</span>';
+    } else if(t === 'float'){
+      const n = parseFloat(raw || '0');
+      displayVal = String(n); pyType = 'float'; printedVal = String(n);
+      preview.innerHTML = '<span class="num">' + n + '</span>';
+    } else if(t === 'str'){
+      displayVal = '"' + raw + '"'; pyType = 'str'; printedVal = raw;
+      preview.innerHTML = '<span class="str">"' + escapeHtml(raw) + '"</span>';
+    } else {
+      const b = raw === 'true' ? 'True' : 'False';
+      displayVal = b; pyType = 'bool'; printedVal = b;
+      preview.innerHTML = '<span class="kw">' + b + '</span>';
+    }
+    output.innerHTML = '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> ' + escapeHtml(printedVal) + '</span>' +
+                        '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> &lt;class \'' + pyType + '\'&gt;</span>';
+  }
+
+  typeSelect.addEventListener('change', renderInput);
+  renderInput();
+})();
+
+/* ============================================================
+   SESI 2 — Operators
+   ============================================================ */
+(function(){
+  const a = document.getElementById('arA'), b = document.getElementById('arB'), op = document.getElementById('arOp');
+  const aPrev = document.getElementById('arA_prev'), bPrev = document.getElementById('arB_prev'), opPrev = document.getElementById('arOp_prev');
+  const out = document.getElementById('arOutput');
+  function calc(){
+    const x = parseFloat(a.value || '0'), y = parseFloat(b.value || '0');
+    aPrev.textContent = a.value; bPrev.textContent = b.value; opPrev.textContent = op.value;
+    let r;
+    switch(op.value){
+      case '+': r = x + y; break;
+      case '-': r = x - y; break;
+      case '*': r = x * y; break;
+      case '/': r = y === 0 ? 'ZeroDivisionError' : (x / y); break;
+      case '//': r = y === 0 ? 'ZeroDivisionError' : Math.floor(x / y); break;
+      case '%': r = y === 0 ? 'ZeroDivisionError' : (x % y); break;
+      case '**': r = Math.pow(x, y); break;
+    }
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + r;
+  }
+  [a,b,op].forEach(el => el.addEventListener('input', calc));
+  op.addEventListener('change', calc);
+  calc();
+})();
+
+(function(){
+  const x = document.getElementById('asX'), op = document.getElementById('asOp'), n = document.getElementById('asN');
+  const xPrev = document.getElementById('asX_prev'), opPrev = document.getElementById('asOp_prev'), nPrev = document.getElementById('asN_prev');
+  const out = document.getElementById('asOutput');
+  function calc(){
+    const xv = parseFloat(x.value || '0'), nv = parseFloat(n.value || '0');
+    xPrev.textContent = x.value; opPrev.textContent = op.value; nPrev.textContent = n.value;
+    let r;
+    switch(op.value){
+      case '+=': r = xv + nv; break;
+      case '-=': r = xv - nv; break;
+      case '*=': r = xv * nv; break;
+      case '/=': r = nv === 0 ? 'ZeroDivisionError' : (xv / nv); break;
+    }
+    out.innerHTML = '<span class="out-label">sebelum:</span> ' + xv + '&nbsp;&nbsp; <span class="out-label">sesudah:</span> ' + r;
+  }
+  [x,op,n].forEach(el => el.addEventListener('input', calc));
+  op.addEventListener('change', calc);
+  calc();
+})();
+
+(function(){
+  const a = document.getElementById('cpA'), b = document.getElementById('cpB'), op = document.getElementById('cpOp');
+  const aPrev = document.getElementById('cpA_prev'), bPrev = document.getElementById('cpB_prev'), opPrev = document.getElementById('cpOp_prev');
+  const out = document.getElementById('cpOutput');
+  function calc(){
+    const x = parseFloat(a.value || '0'), y = parseFloat(b.value || '0');
+    aPrev.textContent = a.value; bPrev.textContent = b.value; opPrev.textContent = op.value;
+    let r;
+    switch(op.value){
+      case '==': r = x === y; break;
+      case '!=': r = x !== y; break;
+      case '>': r = x > y; break;
+      case '<': r = x < y; break;
+      case '>=': r = x >= y; break;
+      case '<=': r = x <= y; break;
+    }
+    out.className = 'output-box' + (r ? '' : ' is-false');
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + (r ? 'True' : 'False');
+  }
+  [a,b,op].forEach(el => el.addEventListener('input', calc));
+  op.addEventListener('change', calc);
+  calc();
+})();
+
+(function(){
+  const p = document.getElementById('lgP'), op = document.getElementById('lgOp'), q = document.getElementById('lgQ');
+  const pPrev = document.getElementById('lgP_prev'), opPrev = document.getElementById('lgOp_prev'), qWrap = document.getElementById('lgQWrap');
+  const out = document.getElementById('lgOutput');
+  function calc(){
+    const pv = p.value === 'true';
+    const qv = q.value === 'true';
+    pPrev.innerHTML = pv ? 'True' : 'False';
+    opPrev.textContent = op.value;
+    qWrap.style.display = op.value === 'not' ? 'none' : 'flex';
+    let r;
+    if(op.value === 'and') r = pv && qv;
+    else if(op.value === 'or') r = pv || qv;
+    else r = !pv;
+    out.className = 'output-box' + (r ? '' : ' is-false');
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + (r ? 'True' : 'False');
+  }
+  [p,op,q].forEach(el => el.addEventListener('change', calc));
+  calc();
+})();
+
+/* ============================================================
+   SESI 3 — Conditional (highlight active branch)
+   ============================================================ */
+function setHL(elOn, on){ elOn.classList.toggle('on', on); elOn.classList.toggle('off', !on); }
+
+(function(){
+  const val = document.getElementById('c1Val'), prev = document.getElementById('c1_prev'), line = document.getElementById('c1_line'), out = document.getElementById('c1Output');
+  function calc(){
+    const n = parseFloat(val.value || '0');
+    prev.textContent = val.value;
+    const pass = n >= 60;
+    setHL(line, pass);
+    out.innerHTML = pass ? '<span class="out-label">&gt;&gt;&gt;</span> Lulus' : '<span class="out-label" style="color:var(--text-muted)">// tidak ada output</span>';
+    out.className = 'output-box';
+  }
+  val.addEventListener('input', calc); calc();
+})();
+
+(function(){
+  const val = document.getElementById('c2Val'), prev = document.getElementById('c2_prev');
+  const lineA = document.getElementById('c2_lineA'), lineB = document.getElementById('c2_lineB'), out = document.getElementById('c2Output');
+  function calc(){
+    const n = parseFloat(val.value || '0');
+    prev.textContent = val.value;
+    const pass = n >= 60;
+    setHL(lineA, pass); setHL(lineB, !pass);
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + (pass ? 'Lulus' : 'Tidak Lulus');
+  }
+  val.addEventListener('input', calc); calc();
+})();
+
+(function(){
+  const val = document.getElementById('c3Val'), prev = document.getElementById('c3_prev');
+  const A = document.getElementById('c3_A'), B = document.getElementById('c3_B'), C = document.getElementById('c3_C'), D = document.getElementById('c3_D');
+  const out = document.getElementById('c3Output');
+  function calc(){
+    const n = parseFloat(val.value || '0');
+    prev.textContent = val.value;
+    let grade;
+    if(n >= 90){ grade='A'; setHL(A,true); setHL(B,false); setHL(C,false); setHL(D,false); }
+    else if(n >= 80){ grade='B'; setHL(A,false); setHL(B,true); setHL(C,false); setHL(D,false); }
+    else if(n >= 70){ grade='C'; setHL(A,false); setHL(B,false); setHL(C,true); setHL(D,false); }
+    else { grade='D'; setHL(A,false); setHL(B,false); setHL(C,false); setHL(D,true); }
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + grade;
+  }
+  val.addEventListener('input', calc); calc();
+})();
+
+(function(){
+  const val = document.getElementById('c4Val'), prev = document.getElementById('c4_prev');
+  const A = document.getElementById('c4_A'), B = document.getElementById('c4_B'), C = document.getElementById('c4_C');
+  const out = document.getElementById('c4Output');
+  function calc(){
+    const n = parseInt(val.value || '0', 10);
+    prev.textContent = val.value;
+    let msg;
+    if(n > 0){
+      if(n % 2 === 0){ msg='Positif genap'; setHL(A,true); setHL(B,false); setHL(C,false); }
+      else { msg='Positif ganjil'; setHL(A,false); setHL(B,true); setHL(C,false); }
+    } else {
+      msg='Bukan positif'; setHL(A,false); setHL(B,false); setHL(C,true);
+    }
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + msg;
+  }
+  val.addEventListener('input', calc); calc();
+})();
+
+(function(){
+  const umur = document.getElementById('c5Umur'), ktp = document.getElementById('c5Ktp');
+  const prevUmur = document.getElementById('c5_prevUmur'), prevKtp = document.getElementById('c5_prevKtp');
+  const A = document.getElementById('c5_A'), B = document.getElementById('c5_B'), out = document.getElementById('c5Output');
+  function calc(){
+    const u = parseInt(umur.value || '0', 10);
+    const k = ktp.value === 'true';
+    prevUmur.textContent = umur.value;
+    prevKtp.innerHTML = k ? 'True' : 'False';
+    const ok = u >= 17 && k;
+    setHL(A, ok); setHL(B, !ok);
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + (ok ? 'Boleh daftar' : 'Belum memenuhi syarat');
+  }
+  umur.addEventListener('input', calc); ktp.addEventListener('change', calc); calc();
+})();
+
+/* ============================================================
+   SESI 4 — Loops
+   ============================================================ */
+(function(){
+  const start = document.getElementById('wStart'), limit = document.getElementById('wLimit');
+  const prevStart = document.getElementById('w_prevStart'), prevLimit = document.getElementById('w_prevLimit');
+  const out = document.getElementById('wOutput');
+  function calc(){
+    let i = parseInt(start.value || '0', 10);
+    const lim = parseInt(limit.value || '0', 10);
+    prevStart.textContent = start.value; prevLimit.textContent = limit.value;
+    let lines = [];
+    let guard = 0;
+    while(i <= lim && guard < 200){ lines.push(i); i += 1; guard++; }
+    out.innerHTML = lines.length ? lines.map(l => '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> ' + l + '</span>').join('') : '<span class="out-label" style="color:var(--text-muted)">// tidak ada output</span>';
+  }
+  [start,limit].forEach(el => el.addEventListener('input', calc));
+  calc();
+})();
+
+(function(){
+  const start = document.getElementById('fStart'), stop = document.getElementById('fStop'), step = document.getElementById('fStep');
+  const prevStart = document.getElementById('f_prevStart'), prevStop = document.getElementById('f_prevStop'), prevStep = document.getElementById('f_prevStep');
+  const out = document.getElementById('fOutput');
+  function calc(){
+    const s = parseInt(start.value || '0', 10), e = parseInt(stop.value || '0', 10), st = parseInt(step.value || '1', 10) || 1;
+    prevStart.textContent = start.value; prevStop.textContent = stop.value; prevStep.textContent = step.value;
+    let lines = [];
+    if(st > 0){ for(let i = s; i < e && lines.length < 200; i += st) lines.push(i); }
+    else if(st < 0){ for(let i = s; i > e && lines.length < 200; i += st) lines.push(i); }
+    out.innerHTML = lines.length ? lines.map(l => '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> ' + l + '</span>').join('') : '<span class="out-label" style="color:var(--text-muted)">// tidak ada output</span>';
+  }
+  [start,stop,step].forEach(el => el.addEventListener('input', calc));
+  calc();
+})();
+
+(function(){
+  const mode = document.getElementById('bcMode'), stop = document.getElementById('bcStop');
+  const prevMode = document.getElementById('bc_prevMode'), prevStop = document.getElementById('bc_prevStop');
+  const out = document.getElementById('bcOutput');
+  function calc(){
+    const st = parseInt(stop.value || '0', 10);
+    prevStop.textContent = stop.value;
+    prevMode.textContent = mode.value === 'none' ? 'pass' : mode.value;
+    let lines = [];
+    for(let i = 1; i < 10; i++){
+      if(i === st){
+        if(mode.value === 'break') break;
+        if(mode.value === 'continue') continue;
+      }
+      lines.push(i);
+    }
+    out.innerHTML = lines.length ? lines.map(l => '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> ' + l + '</span>').join('') : '<span class="out-label" style="color:var(--text-muted)">// tidak ada output</span>';
+  }
+  mode.addEventListener('change', calc); stop.addEventListener('input', calc); calc();
+})();
+
+(function(){
+  const rows = document.getElementById('npRows'), prev = document.getElementById('np_prevRows'), out = document.getElementById('npOutput');
+  function calc(){
+    let r = parseInt(rows.value || '0', 10);
+    r = Math.max(1, Math.min(12, r));
+    prev.textContent = r;
+    let lines = [];
+    for(let i = 1; i <= r; i++) lines.push('*'.repeat(i));
+    out.innerHTML = lines.map(l => '<span class="out-line">' + l + '</span>').join('');
+  }
+  rows.addEventListener('input', calc); calc();
+})();
+
+/* ============================================================
+   SESI 5 — Lists
+   ============================================================ */
+(function(){
+  let list = ['Apel', 'Jeruk', 'Mangga'];
+  const chipsEl = document.getElementById('listChips');
+  const output = document.getElementById('listOutput');
+  const addInput = document.getElementById('listAddInput'), addBtn = document.getElementById('listAddBtn');
+  const updIdx = document.getElementById('listUpdateIdx'), updVal = document.getElementById('listUpdateVal'), updBtn = document.getElementById('listUpdateBtn');
+  const remVal = document.getElementById('listRemoveVal'), remBtn = document.getElementById('listRemoveBtn');
+  const loopBtn = document.getElementById('listLoopBtn');
+  const loopOutput = document.getElementById('listLoopOutput');
+
+  function render(msg){
+    chipsEl.innerHTML = list.map((item, i) => '<span class="chip"><span class="idx">' + i + '</span>' + escapeHtml(item) + '</span>').join('');
+    output.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> [' + list.map(x => '"' + x + '"').join(', ') + ']' + (msg ? '<br><span style="color:var(--text-muted); font-size:12px;">' + msg + '</span>' : '');
+  }
+
+  addBtn.addEventListener('click', () => {
+    const v = addInput.value.trim();
+    if(!v) return;
+    list.push(v);
+    addInput.value = '';
+    render('ditambahkan: "' + v + '"');
+  });
+
+  updBtn.addEventListener('click', () => {
+    const idx = parseInt(updIdx.value || '0', 10);
+    const v = updVal.value.trim();
+    if(idx < 0 || idx >= list.length || !v) { render('index di luar jangkauan'); return; }
+    list[idx] = v;
+    updVal.value = '';
+    render('index ' + idx + ' diubah jadi "' + v + '"');
+  });
+
+  remBtn.addEventListener('click', () => {
+    const v = remVal.value.trim();
+    const idx = list.indexOf(v);
+    if(idx === -1){ render('"' + v + '" tidak ditemukan di list'); return; }
+    list.splice(idx, 1);
+    remVal.value = '';
+    render('dihapus: "' + v + '"');
+  });
+
+  loopBtn.addEventListener('click', () => {
+    loopOutput.innerHTML = list.map(item => '<span class="out-line"><span class="out-label">&gt;&gt;&gt;</span> ' + escapeHtml(item) + '</span>').join('');
+  });
+
+  render();
+})();
+
+(function(){
+  const key = document.getElementById('dictKey'), preview = document.getElementById('dictKeyPreview'), out = document.getElementById('dictOutput');
+  const data = { nama: 'Budi', nilai: 90 };
+  function calc(){
+    preview.textContent = key.value;
+    out.innerHTML = '<span class="out-label">&gt;&gt;&gt;</span> ' + data[key.value];
+  }
+  key.addEventListener('change', calc); calc();
+})();
+
+/* ============================================================
+   UTIL
+   ============================================================ */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+</script>
+</body>
+</html>
